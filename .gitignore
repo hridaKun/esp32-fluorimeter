@@ -1,0 +1,25 @@
+# KiCad
+*-backups/
+*.kicad_prl
+*.bak
+*.lck
+fp-info-cache
+_autosave-*
+.history/
+
+# LTspice
+*.raw
+*.log
+*.net
+*.op.raw
+
+# Arduino / build
+build/
+*.bin
+*.elf
+
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
