@@ -1,0 +1,13 @@
+Simulation results (ngspice, simple MCP602-like op-amp model)
+
+1. DC transfer
+   0 uA -> 0.157 V   1 uA -> 1.158 V   2 uA -> 2.159 V   3 uA -> 3.160 V
+   Gain = 1 V per uA (1 mV per nA). Output clips near 3.3 V at about 3.1 uA.
+
+2. LED pulse (100 nA, 3 ms on / 3 ms off)
+   Step = 99.98 mV. Settles to within 0.5 mV in 1.74 ms.
+   The firmware waits 3 ms after switching the LED, so readings are fully settled.
+
+3. Stability without Cf (only 1 pF)
+   Output overshoots to about 142 mV (42%) and rings before settling.
+   With Cf = 330 pF the response is smooth with no overshoot.

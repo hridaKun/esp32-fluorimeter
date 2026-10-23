@@ -1,0 +1,45 @@
+* 2. TRANSIENT: LED switching on/off every 3 ms (as the firmware does)
+* 100 nA of fluorescence should give a clean 100 mV step that settles in about 2 ms.
+*
+* Open in LTspice: File > Open (file type: Netlists), then Run.
+* To use Microchip's MCP601 model instead of the built-in OPAMP model:
+*   put MCP601.txt in this folder, add the line  .inc MCP601.txt
+*   and change "OPAMP" at the end of the XU2 line to "MCP601".
+
+* ---------------- simple op-amp model (MCP602-like) ----------------
+* gain 1e5 (100 dB), gain-bandwidth 2.8 MHz, rail-to-rail output, 1 pA input bias
+.subckt OPAMP inp inn vdd vss out
+Rin  inp inn 1e12
+Ib1  inp vss 1p
+Ib2  inn vss 1p
+G1   0 n1 inp inn 1m
+R1   n1 0 1e8
+C1   n1 0 56.8p
+D1   n1 vdd DCLAMP
+D2   vss n1 DCLAMP
+E1   n2 0 n1 0 1
+Rout n2 out 25
+.model DCLAMP D(IS=1e-14 N=0.05)
+.ends OPAMP
+
+* ---------------- power and reference (schematic block 2) ----------------
+V3V3 vdd 0 3.3
+R1 vdd vref 20k
+R2 vref 0 1k
+C1 vref 0 10u
+
+* ---------------- photodiode = current source + its capacitance ----------------
+* photocurrent flows out of TIA_IN through the diode into VREF
+Cpd  tia_in vref 70p
+Rsh  tia_in vref 1G
+
+* ---------------- transimpedance amplifier ----------------
+R3   tia_out tia_in 1Meg
+XU2  vref tia_in vdd 0 tia_out OPAMP
+
+* ---------------- stimulus + analysis ----------------
+Iph  tia_in vref PULSE(0 100n 1m 10u 10u 3m 6m)
+C2   tia_out tia_in 330p
+.tran 10u 25m 0 10u
+* plot V(tia_out) and V(vref)
+.end
